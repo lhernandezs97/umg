@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Cálculo - UMG</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.11.0/math.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e5a8e 0%, #c41e3a 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #c41e3a 0%, #8b1528 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .subtitle {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .student-info {
+            background: #1e5a8e;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 0.95em;
+        }
+
+        .student-info strong {
+            color: #d4af37;
+        }
+
+        .main-content {
+            padding: 40px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #1e5a8e;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px;
+            background: #f0f0f0;
+            border: none;
+            border-radius: 10px 10px 0 0;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: bold;
+            transition: all 0.3s;
+            color: #333;
+        }
+
+        .tab:hover {
+            background: #e0e0e0;
+        }
+
+        .tab.active {
+            background: #c41e3a;
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #c41e3a;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #1e5a8e;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #c41e3a;
+            box-shadow: 0 0 10px rgba(196, 30, 58, 0.2);
+        }
+
+        .integral-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #c41e3a 0%, #8b1528 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(196, 30, 58, 0.3);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(196, 30, 58, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .result-container {
+            margin-top: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, #1e5a8e 0%, #154570 100%);
+            border-radius: 10px;
+            color: white;
+            min-height: 100px;
+            display: none;
+        }
+
+        .result-container.show {
+            display: block;
+            animation: slideIn 0.5s;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .result-title {
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            color: #d4af37;
+            font-weight: bold;
+        }
+
+        .result-content {
+            font-size: 1.3em;
+            line-height: 1.6;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            word-wrap: break-word;
+        }
+
+        .error {
+            background: linear-gradient(135deg, #c41e3a 0%, #8b1528 100%);
+        }
+
+        .help-text {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        .examples {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border-left: 4px solid #d4af37;
+        }
+
+        .examples h3 {
+            color: #1e5a8e;
+            margin-bottom: 10px;
+        }
+
+        .examples ul {
+            list-style-position: inside;
+            color: #333;
+        }
+
+        .examples li {
+            margin: 5px 0;
+        }
+
+        .footer {
+            background: #1e5a8e;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Calculadora de Cálculo Diferencial e Integral</h1>
+            <p class="subtitle">Universidad Mariano Gálvez de Guatemala</p>
+        </div>
+
+        <div class="student-info">
+            <strong>Estudiante:</strong> Leandro Josué Estuardo Hernández Samayoa | 
+            <strong>Carné:</strong> 6590-15-18355
+        </div>
+
+        <div class="main-content">
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('derivada')">📐 Derivadas</button>
+                <button class="tab" onclick="switchTab('integral')">∫ Integrales Definidas</button>
+            </div>
+
+            <!-- Tab de Derivadas -->
+            <div id="derivada" class="tab-content active">
+                <div class="input-group">
+                    <label for="funcDerivada">Función a derivar f(x):</label>
+                    <input type="text" id="funcDerivada" placeholder="Ejemplo: x^2 + 3*x + 5">
+                    <p class="help-text">Usa * para multiplicar, ^ para potencias, sin(), cos(), tan(), exp(), log(), sqrt()</p>
+                </div>
+
+                <div class="input-group">
+                    <label for="varDerivada">Variable de derivación:</label>
+                    <select id="varDerivada">
+                        <option value="x">x</option>
+                        <option value="y">y</option>
+                        <option value="t">t</option>
+                        <option value="z">z</option>
+                    </select>
+                </div>
+
+                <button onclick="calcularDerivada()">Calcular Derivada</button>
+
+                <div id="resultDerivada" class="result-container">
+                    <div class="result-title">Resultado:</div>
+                    <div class="result-content" id="derivadaOutput"></div>
+                </div>
+
+                <div class="examples">
+                    <h3>Ejemplos de funciones:</h3>
+                    <ul>
+                        <li>Polinomio: x^3 + 2*x^2 - 5*x + 1</li>
+                        <li>Trigonométrica: sin(x) + cos(2*x)</li>
+                        <li>Exponencial: exp(x) o e^x</li>
+                        <li>Logarítmica: log(x)</li>
+                        <li>Combinada: x^2 * sin(x) + exp(x)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Tab de Integrales -->
+            <div id="integral" class="tab-content">
+                <div class="input-group">
+                    <label for="funcIntegral">Función a integrar f(x):</label>
+                    <input type="text" id="funcIntegral" placeholder="Ejemplo: x^2 + 3*x + 5">
+                    <p class="help-text">Usa * para multiplicar, ^ para potencias, sin(), cos(), tan(), exp(), log(), sqrt()</p>
+                </div>
+
+                <div class="input-group">
+                    <label for="varIntegral">Variable de integración:</label>
+                    <select id="varIntegral">
+                        <option value="x">x</option>
+                        <option value="y">y</option>
+                        <option value="t">t</option>
+                        <option value="z">z</option>
+                    </select>
+                </div>
+
+                <div class="integral-inputs">
+                    <div class="input-group">
+                        <label for="limiteInferior">Límite inferior (a):</label>
+                        <input type="number" id="limiteInferior" step="any" placeholder="Ejemplo: 0">
+                    </div>
+                    <div class="input-group">
+                        <label for="limiteSuperior">Límite superior (b):</label>
+                        <input type="number" id="limiteSuperior" step="any" placeholder="Ejemplo: 1">
+                    </div>
+                </div>
+
+                <button onclick="calcularIntegral()">Calcular Integral Definida</button>
+
+                <div id="resultIntegral" class="result-container">
+                    <div class="result-title">Resultado:</div>
+                    <div class="result-content" id="integralOutput"></div>
+                </div>
+
+                <div class="examples">
+                    <h3>Ejemplos de integrales:</h3>
+                    <ul>
+                        <li>∫₀¹ x^2 dx</li>
+                        <li>∫₀^(π) sin(x) dx</li>
+                        <li>∫₁² (1/x) dx = log(2) - log(1)</li>
+                        <li>∫₀¹ exp(x) dx</li>
+                        <li>∫₀^(π/2) cos(x) dx</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            © 2025 Universidad Mariano Gálvez de Guatemala - Proyecto de Cálculo<br>
+            "Conoceréis la verdad y la verdad os hará libres"
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tabName) {
+            // Ocultar todos los contenidos
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => content.classList.remove('active'));
+
+            // Desactivar todas las tabs
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+
+            // Activar la tab seleccionada
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+
+            // Ocultar resultados
+            document.getElementById('resultDerivada').classList.remove('show');
+            document.getElementById('resultIntegral').classList.remove('show');
+        }
+
+        function calcularDerivada() {
+            const funcStr = document.getElementById('funcDerivada').value.trim();
+            const variable = document.getElementById('varDerivada').value;
+            const resultDiv = document.getElementById('resultDerivada');
+            const outputDiv = document.getElementById('derivadaOutput');
+
+            if (!funcStr) {
+                outputDiv.innerHTML = '<strong>Error:</strong> Por favor ingresa una función.';
+                resultDiv.classList.add('error');
+                resultDiv.classList.add('show');
+                return;
+            }
+
+            try {
+                // Parsear la función
+                const func = math.parse(funcStr);
+                
+                // Calcular la derivada
+                const derivada = math.derivative(func, variable);
+                
+                // Simplificar el resultado
+                const derivadaSimplificada = math.simplify(derivada);
+                
+                // Mostrar resultado
+                outputDiv.innerHTML = `
+                    <strong>Función original:</strong><br>
+                    f(${variable}) = ${funcStr}<br><br>
+                    <strong>Derivada:</strong><br>
+                    f'(${variable}) = ${derivadaSimplificada.toString()}
+                `;
+                resultDiv.classList.remove('error');
+                resultDiv.classList.add('show');
+            } catch (error) {
+                outputDiv.innerHTML = `<strong>Error:</strong> ${error.message}<br><br>
+                    Verifica que la sintaxis sea correcta. Usa * para multiplicar y ^ para potencias.`;
+                resultDiv.classList.add('error');
+                resultDiv.classList.add('show');
+            }
+        }
+
+        function calcularIntegral() {
+            const funcStr = document.getElementById('funcIntegral').value.trim();
+            const variable = document.getElementById('varIntegral').value;
+            const a = parseFloat(document.getElementById('limiteInferior').value);
+            const b = parseFloat(document.getElementById('limiteSuperior').value);
+            const resultDiv = document.getElementById('resultIntegral');
+            const outputDiv = document.getElementById('integralOutput');
+
+            if (!funcStr) {
+                outputDiv.innerHTML = '<strong>Error:</strong> Por favor ingresa una función.';
+                resultDiv.classList.add('error');
+                resultDiv.classList.add('show');
+                return;
+            }
+
+            if (isNaN(a) || isNaN(b)) {
+                outputDiv.innerHTML = '<strong>Error:</strong> Por favor ingresa límites de integración válidos.';
+                resultDiv.classList.add('error');
+                resultDiv.classList.add('show');
+                return;
+            }
+
+            try {
+                // Parsear la función
+                const func = math.parse(funcStr);
+                const compiledFunc = func.compile();
+
+                // Método de integración numérica (Simpson)
+                const n = 1000; // Número de subdivisiones
+                const h = (b - a) / n;
+                let suma = 0;
+
+                // Regla del trapecio mejorada
+                for (let i = 0; i <= n; i++) {
+                    const xi = a + i * h;
+                    const scope = {};
+                    scope[variable] = xi;
+                    const yi = compiledFunc.evaluate(scope);
+                    
+                    if (i === 0 || i === n) {
+                        suma += yi;
+                    } else if (i % 2 === 1) {
+                        suma += 4 * yi;
+                    } else {
+                        suma += 2 * yi;
+                    }
+                }
+
+                const resultado = (h / 3) * suma;
+
+                // Mostrar resultado
+                outputDiv.innerHTML = `
+                    <strong>Función:</strong><br>
+                    f(${variable}) = ${funcStr}<br><br>
+                    <strong>Integral definida:</strong><br>
+                    ∫<sub>${a}</sub><sup>${b}</sup> ${funcStr} d${variable} = ${resultado.toFixed(6)}<br><br>
+                    <strong>Interpretación:</strong><br>
+                    El área bajo la curva entre ${a} y ${b} es aproximadamente ${resultado.toFixed(6)} unidades cuadradas.
+                `;
+                resultDiv.classList.remove('error');
+                resultDiv.classList.add('show');
+            } catch (error) {
+                outputDiv.innerHTML = `<strong>Error:</strong> ${error.message}<br><br>
+                    Verifica que la sintaxis sea correcta y que la función esté definida en el intervalo [${a}, ${b}].`;
+                resultDiv.classList.add('error');
+                resultDiv.classList.add('show');
+            }
+        }
+
+        // Permitir calcular con Enter
+        document.getElementById('funcDerivada').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') calcularDerivada();
+        });
+
+        document.getElementById('limiteSuperior').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') calcularIntegral();
+        });
+
+        // Protección contra clic derecho
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            return false;
+        });
+    </script>
+</body>
+</html>
