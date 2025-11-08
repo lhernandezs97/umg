@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proyecto de Cálculo 2 - UMG</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e5a8e 0%, #c41e3a 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            background: linear-gradient(135deg, #c41e3a 0%, #8b1528 100%);
+            color: white;
+            padding: 50px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 15s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        h1 {
+            font-size: 3em;
+            margin-bottom: 15px;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .subtitle {
+            font-size: 1.3em;
+            opacity: 0.95;
+            position: relative;
+            z-index: 1;
+        }
+
+        .student-info {
+            background: #1e5a8e;
+            color: white;
+            padding: 25px;
+            text-align: center;
+            font-size: 1.1em;
+            border-bottom: 4px solid #d4af37;
+        }
+
+        .student-info strong {
+            color: #d4af37;
+            font-size: 1.1em;
+        }
+
+        .main-content {
+            padding: 60px 50px;
+        }
+
+        .welcome-text {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .welcome-text h2 {
+            color: #1e5a8e;
+            font-size: 2.2em;
+            margin-bottom: 20px;
+        }
+
+        .welcome-text p {
+            color: #666;
+            font-size: 1.2em;
+            line-height: 1.6;
+        }
+
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            padding: 40px 30px;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 3px solid transparent;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(30, 90, 142, 0.1) 0%, rgba(196, 30, 58, 0.1) 100%);
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .card:nth-child(1) {
+            border-color: #c41e3a;
+        }
+
+        .card:nth-child(1):hover {
+            border-color: #8b1528;
+            background: linear-gradient(135deg, #ffe5ea 0%, #ffd1d9 100%);
+        }
+
+        .card:nth-child(2) {
+            border-color: #1e5a8e;
+        }
+
+        .card:nth-child(2):hover {
+            border-color: #154570;
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+        }
+
+        .card-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card h3 {
+            font-size: 1.8em;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card:nth-child(1) h3 {
+            color: #c41e3a;
+        }
+
+        .card:nth-child(2) h3 {
+            color: #1e5a8e;
+        }
+
+        .card p {
+            color: #555;
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            font-size: 1.1em;
+            transition: all 0.3s;
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .card:nth-child(1) .btn {
+            background: linear-gradient(135deg, #c41e3a 0%, #8b1528 100%);
+        }
+
+        .card:nth-child(1) .btn:hover {
+            background: linear-gradient(135deg, #8b1528 0%, #6b0f1e 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(196, 30, 58, 0.4);
+        }
+
+        .card:nth-child(2) .btn {
+            background: linear-gradient(135deg, #1e5a8e 0%, #154570 100%);
+        }
+
+        .card:nth-child(2) .btn:hover {
+            background: linear-gradient(135deg, #154570 0%, #0d2f4a 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(30, 90, 142, 0.4);
+        }
+
+        .footer {
+            background: #1e5a8e;
+            color: white;
+            text-align: center;
+            padding: 30px;
+            font-size: 1em;
+        }
+
+        .footer-content {
+            margin-bottom: 10px;
+        }
+
+        .footer-motto {
+            font-style: italic;
+            color: #d4af37;
+            font-size: 1.1em;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+
+            .main-content {
+                padding: 40px 25px;
+            }
+
+            .welcome-text h2 {
+                font-size: 1.8em;
+            }
+
+            .cards-container {
+                grid-template-columns: 1fr;
+            }
+
+            .card {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎓 Proyecto de Cálculo 2</h1>
+            <p class="subtitle">Universidad Mariano Gálvez de Guatemala</p>
+        </div>
+
+        <div class="student-info">
+            <strong>Estudiante:</strong> Leandro Josué Estuardo Hernández Samayoa | <strong>Carné:</strong> 6590-15-18355
+        </div>
+
+        <div class="main-content">
+            <div class="welcome-text">
+                <h2>¡Bienvenido a mi Portafolio!</h2>
+                <p>
+                    Este proyecto integra las herramientas y conocimientos adquiridos durante el curso de Cálculo 2.<br>
+                    Selecciona una opción para continuar:
+                </p>
+            </div>
+
+            <div class="cards-container">
+                <div class="card" onclick="window.location.href='calculadora.html'">
+                    <div class="card-icon">🧮</div>
+                    <h3>Calculadora</h3>
+                    <p>
+                        Calculadora interactiva de cálculo diferencial e integral. 
+                        Resuelve derivadas e integrales definidas de forma automática.
+                    </p>
+                    <a href="calculadora.html" class="btn">Abrir Calculadora</a>
+                </div>
+
+                <div class="card" onclick="window.location.href='portafolio.html'">
+                    <div class="card-icon">📚</div>
+                    <h3>Portafolio</h3>
+                    <p>
+                        Resumen completo de todos los temas vistos en el curso. 
+                        Incluye definiciones y ejemplos de cada tema.
+                    </p>
+                    <a href="portafolio.html" class="btn">Ver Portafolio</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="footer-content">
+                © 2025 Universidad Mariano Gálvez de Guatemala
+            </div>
+            <div class="footer-content">
+                Proyecto de Cálculo 2
+            </div>
+            <div class="footer-motto">
+                "Conoceréis la verdad y la verdad os hará libres"
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Protección contra clic derecho
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            return false;
+        });
+
+        // Prevenir selección excepto en inputs
+        document.addEventListener('selectstart', function(e) {
+            if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+                e.preventDefault();
+                return false;
+            }
+        });
+    </script>
+</body>
+</html>
